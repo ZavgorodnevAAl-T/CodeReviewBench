@@ -1,5 +1,8 @@
 import re
+import logging
 from typing import List, Dict
+
+logger = logging.getLogger(__name__)
 
 
 def parse_predictions(predictions: List[str]) -> List[List[str]]:
@@ -7,7 +10,7 @@ def parse_predictions(predictions: List[str]) -> List[List[str]]:
     for prediction in predictions:
         # Handle None predictions
         if prediction is None:
-            print(f"Warning: Found None prediction, skipping...")
+            logger.warning("Found None prediction, skipping...")
             parsed_predictions.append([])
             continue
 

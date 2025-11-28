@@ -45,15 +45,8 @@ st.markdown(
         padding: 2rem 1.5rem;
         height: 100%;
         text-align: center;
-        transition: all 0.3s ease;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         margin-bottom: 1rem;
-    }
-    
-    .feature-box:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        border-color: #06beb6;
     }
     
     .feature-icon {
@@ -88,15 +81,7 @@ st.markdown(
         font-size: 1.1rem;
         display: inline-block;
         margin: 1rem 0;
-        transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .leaderboard-link:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        text-decoration: none !important;
-        color: white !important;
     }
     
     .leaderboard-section {
@@ -160,7 +145,6 @@ st.markdown(
 # --------------------------------------------------
 # Features header
 # --------------------------------------------------
-st.markdown('<h2 class="features-header">✨ Key Features</h2>', unsafe_allow_html=True)
 
 # --------------------------------------------------
 # Key features grid - 4 squares in a row
@@ -175,9 +159,10 @@ features = [
 cols = st.columns(4)
 for idx, (icon, title, description) in enumerate(features):
     with cols[idx]:
+        # Используем min-height для выравнивания высоты по всем карточкам
         st.markdown(
             f"""
-            <div class='feature-box'>
+            <div class='feature-box' style="min-height: 300px; display: flex; flex-direction: column; justify-content: center;">
                 <span class='feature-icon'>{icon}</span>
                 <div class='feature-title'>{title}</div>
                 <div class='feature-description'>{description}</div>
@@ -187,24 +172,12 @@ for idx, (icon, title, description) in enumerate(features):
         )
 
 # --------------------------------------------------
-# Benchmark Leaderboard section
+# Run Benchmark button
 # --------------------------------------------------
-st.markdown(
-    """
-    <div class="leaderboard-section">
-        <h3 class="leaderboard-title">🏆 Compare Performance</h3>
-        <a href="#" class="leaderboard-link">
-            📊 Benchmark Leaderboard
-        </a>
-        <p class="leaderboard-subtitle">
-            Explore how different models perform across various code review tasks
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
 
-# --------------------------------------------------
-# Sidebar hint
-# --------------------------------------------------
-st.info("🚀 Use the sidebar to get started: choose **Configuration** to run your first benchmark!") 
+
+st.markdown("<div style='margin-top: 3rem;'></div>", unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    if st.button("Run Benchmark", key="run_bench_btn", use_container_width=True, type="primary"):
+        st.switch_page("pages/1_Configuration.py")

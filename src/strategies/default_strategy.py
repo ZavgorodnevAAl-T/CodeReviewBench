@@ -1,19 +1,17 @@
-from strategies.base_strategy import EvaluationStrategy
-from models.base_model import BaseLLM
+from .base_strategy import EvaluationStrategy
+from ..models.base_model import BaseLLM
 from typing import List, Optional, Callable
 import pandas as pd
 from configs.generation_config import GenerationConfig
-from utils.predictions_parser import parse_predictions
-from prompts.generation_prompt import SYSTEM_PROMPT
-from metrics.compute_metrics import compute_metrics
+from ..utils.predictions_parser import parse_predictions
+from ..prompts.generation_prompt import SYSTEM_PROMPT
+from ..metrics.compute_metrics import compute_metrics
 
 class DefaultStrategy(EvaluationStrategy):
     def __init__(self, model: BaseLLM, judge_model: BaseLLM, metrics_to_compute: List[str]):
         super().__init__(model, [])
         self.judge_model = judge_model
-        self.metrics_to_compute = metrics_to_compute 
-        if self.model.type == "vllm" or self.judge_model.type == "vllm":
-            assert self.model.type == self.judge_model.type, "we have memory only for one vllm model"
+        self.metrics_to_compute = metrics_to_compute
 
     def evaluate(
         self,

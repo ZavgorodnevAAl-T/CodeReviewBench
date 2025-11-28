@@ -1,7 +1,7 @@
 from .base_metric import BaseMetric
 from typing import List, Dict, Any, Optional, Tuple
-from judge.exact_match_judge import ExactMatchJudge
-from models.base_model import BaseLLM
+from ..judge.exact_match_judge import ExactMatchJudge
+from ..models.base_model import BaseLLM
 import pandas as pd
 
 class ExactMatchMetric(BaseMetric):
@@ -32,7 +32,7 @@ class ExactMatchMetric(BaseMetric):
                 micro_scores = [0]
 
             row = {
-                f"{self.name}_pass_{k}": max(micro_scores[:k]) for k in passes
+                f"{self.name}_judge_{k}": max(micro_scores[:k]) for k in passes
             }
             all_scores.append(row)
 

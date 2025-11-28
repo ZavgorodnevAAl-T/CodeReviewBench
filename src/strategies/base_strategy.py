@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
-from models.base_model import BaseLLM
-from metrics.base_metric import BaseMetric
+from ..models.base_model import BaseLLM
+from ..metrics.base_metric import BaseMetric
 from typing import List
-from utils.load_data import load_data
+from ..utils.load_data import load_data
 
 class EvaluationStrategy(ABC):
     def __init__(self, model: BaseLLM, metrics_to_compute: list[BaseMetric]):
         self.model = model
         self.metrics_to_compute = metrics_to_compute
-        self.data = load_data(max_samples=50)
+        self.data = load_data()
         self.prompts = self.data["prompts"]
         self.outputs = self.data["outputs"]
         self.diffs = self.data["diffs"]

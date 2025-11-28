@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from models.base_model import BaseLLM
-from prompts.multimetric_prompt import USER_PROMPT_MULTIMETRIC as MULTIMETRIC_JUDGE_PROMPT, SYSTEM_PROMPT
+from ..models.base_model import BaseLLM
+from ..prompts.multimetric_prompt import USER_PROMPT_MULTIMETRIC as MULTIMETRIC_JUDGE_PROMPT, SYSTEM_PROMPT
 from pydantic import BaseModel
 from .base_judge import BaseJudge
 from configs.generation_config import GenerationConfig

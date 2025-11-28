@@ -1,7 +1,7 @@
 from .base_judge import BaseJudge
 from typing import List, Dict, Any, Optional, Tuple
-from models.base_model import BaseLLM
-from prompts.exact_match_prompt import EXACT_MATCH_PROMPT , SYSTEM_PROMPT
+from ..models.base_model import BaseLLM
+from ..prompts.exact_match_prompt import EXACT_MATCH_PROMPT , SYSTEM_PROMPT
 from configs.generation_config import GenerationConfig
 
 class ExactMatchJudge(BaseJudge):

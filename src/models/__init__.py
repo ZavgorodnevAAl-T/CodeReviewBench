@@ -1,9 +1,7 @@
-from .vllm_model import VLLMLLM
 from .openai_model import OpenAILLM
 from configs.model_config import ModelConfig
 
 MODEL_REGISTRY = {
-    "vllm": VLLMLLM,
     "openai": OpenAILLM
 }
 

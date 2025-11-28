@@ -36,10 +36,6 @@ class OpenAILLM(BaseLLM):
                     }
                 } if response_format else None,
             )
-            print("--------------------------------")
-            print(messages)
-            print("--------------------------------")
-            print(response.choices[0].message.content)
             logger.info(response.choices[0].message.content)
             if response_format:
                 return response_format.model_validate_json(response.choices[0].message.content)

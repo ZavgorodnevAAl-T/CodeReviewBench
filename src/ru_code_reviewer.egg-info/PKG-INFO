@@ -9,7 +9,6 @@ Description-Content-Type: text/markdown
 Requires-Dist: streamlit>=1.28.0
 Requires-Dist: pandas>=1.5.0
 Requires-Dist: openai>=1.0.0
-Requires-Dist: vllm>=0.9.1
 Requires-Dist: tenacity>=8.0.0
 Requires-Dist: tqdm>=4.64.0
 Requires-Dist: sacrebleu>=2.3.0

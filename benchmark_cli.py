@@ -16,7 +16,6 @@ def parse_args():
     parser.add_argument("--model-path", required=True, help="Model name/id or local path")
     parser.add_argument("--api-key", default=None, help="API key for OpenAI models")
     parser.add_argument("--base-url", default=None, help="Base URL for OpenAI-compatible endpoint")
-    parser.add_argument("--gpu-mem", type=float, default=0.95, help="GPU memory utilisation for vLLM")
 
     # Judge model (optional, defaults to same as benchmark)
     parser.add_argument("--judge-model-type", choices=[m.value for m in ModelType])
@@ -31,7 +30,7 @@ def parse_args():
 
     # Metrics & passes
     parser.add_argument("--metrics", default="exact_match", help="Comma-separated list of metrics")
-    parser.add_argument("--passes", default="1,5,10", help="Comma-separated recall@k values")
+    parser.add_argument("--passes", default="1,5,10", help="Comma-separated judge@k values")
 
     # Output paths
     parser.add_argument("--out-json", default="results.json", help="File to save aggregated metrics JSON")
@@ -50,7 +49,6 @@ def build_model_config(args, prefix: str = "") -> ModelConfig:
         model_path=path,
         api_key=api_key,
         base_url=base_url,
-        gpu_memory_utilization=args.gpu_mem,
     )
 
 

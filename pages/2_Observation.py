@@ -1,10 +1,27 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+from styles import get_common_styles
 
-st.set_page_config(page_title="ruCodeReviewer • Results", page_icon="📈", layout="wide")
+st.set_page_config(page_title="CodeReviewBench • Observation", page_icon="📈", layout="wide")
 
-st.title("📈 Benchmark Observation")
+# --------------------------------------------------
+# Apply common styles
+# --------------------------------------------------
+st.markdown(get_common_styles(), unsafe_allow_html=True)
+
+# --------------------------------------------------
+# Header
+# --------------------------------------------------
+st.markdown(
+    """
+    <div class="main-header">
+        <div class="main-title">Benchmark Observation</div>
+        <div class="main-subtitle">Explore aggregated results and per-sample metrics</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # -----------------------------------------------------------------------------
 # Safety check
@@ -31,7 +48,7 @@ meta_df = pd.DataFrame(
 # Filtering controls
 # -----------------------------------------------------------------------------
 
-st.sidebar.header("Filters")
+st.sidebar.markdown("### Filters")
 
 def multiselect_with_all(label, options):
     all_key = "(All)"
@@ -56,7 +73,7 @@ if mask.sum() == 0:
     st.stop()
 
 # -----------------------------------------------------------------------------
-# Build summary (metric row, passes as columns) & full sample DataFrame
+# Build summary (metric row, judge@k as columns) & full sample DataFrame
 # -----------------------------------------------------------------------------
 
 summary_dict: dict[str, dict[str, str]] = {}
@@ -84,9 +101,9 @@ for metric_name, metric_tuple in results.items():
     else:
         # ---------------- summary ----------------
         for col in mean_series.index:
-            # extract pass id from *_pass_{k}
-            if "_pass_" in col:
-                _, _, pass_k = col.rpartition("_pass_")
+            # extract judge id from *_judge_{k}
+            if "_judge_" in col:
+                _, _, pass_k = col.rpartition("_judge_")
                 p_int = int(pass_k)
             else:
                 # fallback: no pass encoded
@@ -99,16 +116,16 @@ for metric_name, metric_tuple in results.items():
             summary_dict.setdefault(metric_name, {})[f"@{p_int}"] = f"{mean_val:.4f} ± {std_val:.4f}"
 
     # ---------------- full samples for plots ----------------
-    # Rename each column to pattern "Metric@pass" for easy grouping
+    # Rename each column to pattern "Metric@judge" for easy grouping
     renamed_cols = {}
     for col in samples_df.columns:
-        if "_pass_" in col:
-            metric_base, _, pass_k = col.rpartition("_pass_")
+        if "_judge_" in col:
+            metric_base, _, pass_k = col.rpartition("_judge_")
             renamed_cols[col] = f"{metric_base}@{pass_k}"
             all_passes.add(int(pass_k))
         else:
-            # For metrics without explicit pass (e.g., multi_metric readability),
-            # treat them as pass@1 and tag accordingly for consistency.
+            # For metrics without explicit judge (e.g., multi_metric readability),
+            # treat them as judge@1 and tag accordingly for consistency.
             renamed_cols[col] = f"{metric_name}_{col}@1"
             all_passes.add(1)
     samples_df = samples_df.rename(columns=renamed_cols)
@@ -136,11 +153,11 @@ summary_df = pd.DataFrame.from_dict(summary_dict, orient="index")
 summary_df.index.name = "Metric"
 summary_df = summary_df.sort_index()
 
-# Ensure columns sorted by pass number (1,5,10,…)
+# Ensure columns sorted by judge@k number (1,5,10,…)
 sorted_pass_cols = [f"@{p}" for p in sorted(all_passes)]
 summary_df = summary_df.reindex(columns=sorted_pass_cols)
 
-st.subheader("Metric means ± std (rows = metrics, columns = passes)")
+st.markdown('<div class="panel-title">Metric means ± std (rows = metrics, columns = judge@k)</div>', unsafe_allow_html=True)
 st.dataframe(summary_df, use_container_width=True)
 
 # -----------------------------------------------------------------------------
@@ -156,7 +173,7 @@ if multi_metric_breakdown is not None:
     })
 
     st.divider()
-    st.subheader("🧩 Multi-Metric breakdown (pass @1)")
+    st.markdown('<div class="panel-title">🧩 Multi-Metric breakdown (judge@1)</div>', unsafe_allow_html=True)
     st.dataframe(mm_table, use_container_width=True)
 
 # -----------------------------------------------------------------------------
@@ -170,16 +187,16 @@ if combined_samples.empty:
 
 st.divider()
 
-st.header("📊 Explore relationships between metrics")
+st.markdown('<div class="panel-title">📊 Explore relationships between metrics</div>', unsafe_allow_html=True)
 
-# Select pass first to keep the list manageable
-selected_pass = st.selectbox("Pass (k)", options=sorted(all_passes), format_func=lambda x: f"@{x}")
+# Select judge@k first to keep the list manageable
+selected_pass = st.selectbox("Judge@k", options=sorted(all_passes), format_func=lambda x: f"@{x}")
 
 pass_suffix = f"@{selected_pass}"
 cols_for_pass = [c for c in combined_samples.columns if c.endswith(pass_suffix)]
 
 if len(cols_for_pass) < 2:
-    st.info("Need at least two metrics for scatter plot at this pass.")
+    st.info("Need at least two metrics for scatter plot at this judge@k.")
 else:
     col_x = st.selectbox("X-axis", options=cols_for_pass, key="scatter_x")
     remaining = [c for c in cols_for_pass if c != col_x]
@@ -199,9 +216,9 @@ else:
 
 st.divider()
 
-st.header("📦 Boxplots")
+st.markdown('<div class="panel-title">📦 Boxplots</div>', unsafe_allow_html=True)
 
-selected_box_pass = st.selectbox("Pass (k) for boxplot", options=sorted(all_passes), key="box_pass")
+selected_box_pass = st.selectbox("Judge@k for boxplot", options=sorted(all_passes), key="box_pass")
 box_suffix = f"@{selected_box_pass}"
 box_cols = [c for c in combined_samples.columns if c.endswith(box_suffix)]
 

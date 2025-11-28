@@ -12,7 +12,6 @@ src/metrics/multi_metric.py
 src/models/__init__.py
 src/models/base_model.py
 src/models/openai_model.py
-src/models/vllm_model.py
 src/prompts/exact_match_prompt.py
 src/prompts/generation_prompt.py
 src/prompts/multimetric_prompt.py

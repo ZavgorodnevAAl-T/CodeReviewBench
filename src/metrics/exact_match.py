@@ -13,7 +13,7 @@ class ExactMatchMetric(BaseMetric):
             for hypothesis in hypotheses:
                 score = 1.0 if hypothesis.strip().lower() == reference.strip().lower() else 0.0
                 micro_scores.append(score)
-            scores.append({f"{self.name}_pass_{k}": max(micro_scores[:k]) for k in passes})
+            scores.append({f"{self.name}_judge_{k}": max(micro_scores[:k]) for k in passes})
         scores = pd.DataFrame(scores)
         return scores, scores.mean(axis=0), self.standard_error(scores)
         

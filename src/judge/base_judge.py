@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional, Tuple
-from models.base_model import BaseLLM
+from ..models.base_model import BaseLLM
 
 
 class BaseJudge(ABC):

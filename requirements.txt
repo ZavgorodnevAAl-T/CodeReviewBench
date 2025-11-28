@@ -2,7 +2,6 @@ streamlit>=1.28.0
 gradio>=4.0.0
 pandas>=1.5.0
 openai>=1.0.0
-vllm>=0.2.0
 transformers>=4.21.0
 torch>=1.12.0
 tenacity>=8.0.0

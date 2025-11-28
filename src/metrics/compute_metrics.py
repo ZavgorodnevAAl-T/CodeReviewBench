@@ -1,12 +1,15 @@
 from typing import List, Dict, Any, Optional, Tuple
-from metrics.base_metric import BaseMetric
-from models.base_model import BaseLLM
-from metrics.exact_match import ExactMatchMetric
-from metrics.bleu import BLEUMetric
-from metrics.ChrF import ChrFMetric
-from metrics.multi_metric import MultiMetric
-from metrics.llm_based_exact_match import ExactMatchMetric as LLMExactMatchMetric
+from .base_metric import BaseMetric
+from ..models.base_model import BaseLLM
+from .exact_match import ExactMatchMetric
+from .bleu import BLEUMetric
+from .ChrF import ChrFMetric
+from .multi_metric import MultiMetric
+from .llm_based_exact_match import ExactMatchMetric as LLMExactMatchMetric
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
 
 class MetricsFactory:    
     @staticmethod
@@ -49,7 +52,7 @@ def compute_metrics(
             result = metric.calculate(outputs, predictions, passes, diffs)
             results[metric_name] = result
         except Exception as e:
-            print(f"Error computing metric '{metric_name}': {str(e)}")
+            logger.error(f"Error computing metric '{metric_name}': {str(e)}")
             results[metric_name] = None
     
     return results

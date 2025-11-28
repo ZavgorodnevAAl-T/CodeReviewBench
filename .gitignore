@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Results and outputs
+*.json
+!pyproject.toml
+agg.json
+results.json
+samples.jsonl
+
+# Secrets
+.env
+*.key
+
+# Logs
+*.log

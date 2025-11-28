@@ -1,5 +1,5 @@
 from .default_strategy import DefaultStrategy
-from models.base_model import BaseLLM
+from ..models.base_model import BaseLLM
 from typing import List
 
 STRATEGY_REGISTRY = {

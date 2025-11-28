@@ -13,7 +13,7 @@ class BLEUMetric(BaseMetric):
             micro_scores = []
             for hypothesis in hypotheses:
                 micro_scores.append(self.metric.compute(predictions=[hypothesis], references=[[reference]])["bleu"])
-            scores.append({f"{self.name}_pass_{k}": max(micro_scores[:k]) for k in passes})
+            scores.append({f"{self.name}_judge_{k}": max(micro_scores[:k]) for k in passes})
         scores = pd.DataFrame(scores)
         return scores, scores.mean(axis=0), self.standard_error(scores)
         

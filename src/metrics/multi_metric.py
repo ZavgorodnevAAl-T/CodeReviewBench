@@ -1,5 +1,5 @@
-from judge.multimetric_judge import MultimetricJudge
-from models.base_model import BaseLLM
+from ..judge.multimetric_judge import MultimetricJudge
+from ..models.base_model import BaseLLM
 from typing import List, Tuple
 from .base_metric import BaseMetric
 import json
