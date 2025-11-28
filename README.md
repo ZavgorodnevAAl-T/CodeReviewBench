@@ -4,18 +4,13 @@ A lightweight, extensible benchmark suite for evaluating LLM-powered code review
 
 ## Features
 
-- **⚙️ Configurable Workflows**: Quickly tailor datasets, models, and metrics to your needs
-- **📈 Insightful Analytics**: Interactive dashboards to explore aggregate and per-sample results
-- **🧩 Plugin Architecture**: Add new LLM backends, tasks, or evaluation strategies in a few lines of code
-- **🚀 Ready-to-Run**: Ships with curated sample dataset and sensible defaults – start benchmarking in seconds
-- **🔌 Multiple Interfaces**: Web UI (Streamlit), CLI, and REST API (FastAPI)
+- **Configurable Workflows**: Quickly tailor datasets, models, and metrics to your needs
+- **Insightful Analytics**: Interactive dashboards to explore aggregate and per-sample results
+- **Plugin Architecture**: Add new LLM backends, tasks, or evaluation strategies in a few lines of code
+- **Ready-to-Run**: Ships with curated sample dataset and sensible defaults – start benchmarking in seconds
+- **Multiple Interfaces**: Web UI (Streamlit), CLI, and REST API (FastAPI)
 
 ## Installation
-
-### Requirements
-
-- Python >= 3.10
-- pip
 
 ### Setup
 
@@ -117,7 +112,7 @@ The benchmark supports evaluation at multiple judge levels (e.g., 1, 5, 10), all
 ```
 CodeReviewBench/
 ├── src/
-│   ├── models/          # LLM model backends
+│   ├── models/           # LLM model backends
 │   │   ├── base_model.py
 │   │   └── openai_model.py
 │   ├── metrics/          # Evaluation metrics
@@ -133,11 +128,11 @@ CodeReviewBench/
 │   ├── prompts/         # Prompt templates
 │   └── utils/           # Utility functions
 ├── configs/             # Configuration classes
-├── pages/                # Streamlit pages
-├── data/                 # Benchmark datasets
-├── benchmark_cli.py      # CLI interface
-├── api.py                # FastAPI REST interface
-└── Welcome.py            # Streamlit main page
+├── pages/               # Streamlit pages
+├── data/                # Benchmark datasets
+├── benchmark_cli.py     # CLI interface
+├── api.py               # FastAPI REST interface
+└── Welcome.py           # Streamlit main page
 ```
 
 ## Extending the Framework
