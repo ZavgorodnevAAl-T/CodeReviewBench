@@ -56,7 +56,7 @@ python benchmark_cli.py \
   --judge-model-path qwen/qwen-2.5-coder-32b-instruct \
   --judge-base-url https://openrouter.ai/api/v1 \
   --judge-api-key $OPENROUTER_API_KEY \
-  --metrics "llm_exact_match,bleu,multi_metric,chrf" \
+  --metrics "llm_exact_match,multi_metric" \
   --passes "1,5,10" \
   --out-json results.json \
   --out-jsonl samples.jsonl
@@ -92,8 +92,6 @@ The benchmark supports OpenAI-compatible APIs. Configure models using:
 Available metrics:
 
 - **exact_match**: Exact string matching between predictions and references
-- **bleu**: BLEU score for text similarity
-- **chrf**: Character-level F-score (ChrF)
 - **llm_exact_match**: LLM-based exact match using a judge model
 - **multi_metric**: Multi-faceted evaluation using a judge model
 
@@ -117,8 +115,6 @@ CodeReviewBench/
 │   │   └── openai_model.py
 │   ├── metrics/          # Evaluation metrics
 │   │   ├── exact_match.py
-│   │   ├── bleu.py
-│   │   ├── ChrF.py
 │   │   ├── llm_based_exact_match.py
 │   │   └── multi_metric.py
 │   ├── strategies/      # Evaluation strategies

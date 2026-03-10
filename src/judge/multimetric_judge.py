@@ -8,14 +8,9 @@ from configs.generation_config import GenerationConfig
 class Metrics(BaseModel):
     readability: int
     relevance: int
-    explanation_clarity: int
     problem_identification: int
     actionability: int
-    completeness: int
     specificity: int
-    contextual_adequacy: int
-    consistency: int
-    brevity: int
 
 class MultimetricJudge(BaseJudge):
     def __init__(self, model: BaseLLM):

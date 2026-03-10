@@ -18,11 +18,9 @@ def parse_predictions(predictions: List[str]) -> List[List[str]]:
         if not isinstance(prediction, str):
             prediction = str(prediction)
 
-        # Combine both Russian and English comment patterns
-        # Russian: Комментарий 1: ...
-        # English: Comment 1: ...
+        # Parse structured comment pattern: Comment 1: ...
         comment_pattern = re.compile(
-            r'(?:Комментарий|Comment)\s*\d+:\s*(.*?)(?=(?:Комментарий|Comment)\s*\d+:|$)',
+            r'Comment\s*\d+:\s*(.*?)(?=Comment\s*\d+:|$)',
             re.DOTALL | re.IGNORECASE
         )
         comments = comment_pattern.findall(prediction)

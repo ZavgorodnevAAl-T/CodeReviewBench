@@ -5,10 +5,10 @@ from typing import List
 from ..utils.load_data import load_data
 
 class EvaluationStrategy(ABC):
-    def __init__(self, model: BaseLLM, metrics_to_compute: list[BaseMetric]):
+    def __init__(self, model: BaseLLM, metrics_to_compute: list[BaseMetric], data_path: str = None):
         self.model = model
         self.metrics_to_compute = metrics_to_compute
-        self.data = load_data()
+        self.data = load_data(data_path)
         self.prompts = self.data["prompts"]
         self.outputs = self.data["outputs"]
         self.diffs = self.data["diffs"]

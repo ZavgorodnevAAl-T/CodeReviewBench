@@ -147,8 +147,6 @@ st.markdown(
 
 metrics_options = [
     "exact_match",
-    "bleu", 
-    "chrf",
     "llm_exact_match",
     "multi_metric"
 ]

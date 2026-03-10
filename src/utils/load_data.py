@@ -1,15 +1,13 @@
 import pandas as pd
 import os
 
-def load_data(max_samples: int = None):
-    # Get the project root directory
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.join(current_dir, '..', '..')
-    data_path = os.path.join(project_root, 'data', 'ru_codereview_new_data.jsonl')
+def load_data(data_path: str = None):
+    if data_path is None:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.join(current_dir, '..', '..')
+        data_path = os.path.join(project_root, 'data', 'codereview_data.jsonl')
     
     df = pd.read_json(data_path, lines=True)
-    if max_samples is not None:
-        df = df.head(max_samples)
     outputs = df["outputs"].tolist()
     diffs = df["inputs"].apply(lambda x: x["diff_block"]).tolist()
     prompts = df.apply(

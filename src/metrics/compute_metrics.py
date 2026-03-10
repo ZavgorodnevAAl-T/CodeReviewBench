@@ -2,8 +2,6 @@ from typing import List, Dict, Any, Optional, Tuple
 from .base_metric import BaseMetric
 from ..models.base_model import BaseLLM
 from .exact_match import ExactMatchMetric
-from .bleu import BLEUMetric
-from .ChrF import ChrFMetric
 from .multi_metric import MultiMetric
 from .llm_based_exact_match import ExactMatchMetric as LLMExactMatchMetric
 import pandas as pd
@@ -19,10 +17,6 @@ class MetricsFactory:
         
         if metric_name in ['exact_match', 'exact-match']:
             return ExactMatchMetric(**kwargs)
-        elif metric_name in ['bleu']:
-            return BLEUMetric(**kwargs)
-        elif metric_name in ['chrf', 'chr-f']:
-            return ChrFMetric(**kwargs)
         elif metric_name in ['multi_metric', 'multi-metric', 'multimetric']:
             if judge_model is None:
                 raise ValueError(f"Metric '{metric_name}' requires a judge_model parameter")
@@ -49,7 +43,10 @@ def compute_metrics(
     for metric_name in metrics_to_compute:
         try:
             metric = MetricsFactory.get_metric(metric_name, judge_model)
-            result = metric.calculate(outputs, predictions, passes, diffs)
+            if isinstance(metric, MultiMetric):
+                result = metric.calculate(outputs, predictions, diffs)
+            else:
+                result = metric.calculate(outputs, predictions, passes, diffs)
             results[metric_name] = result
         except Exception as e:
             logger.error(f"Error computing metric '{metric_name}': {str(e)}")

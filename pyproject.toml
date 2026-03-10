@@ -3,11 +3,11 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ru-code-reviewer"
+name = "code-reviewer"
 version = "0.1.0"
 description = "LLM-powered code review assistant and evaluation framework"
 authors = [
-  { name = "ruCodeReviewer Team", email = "team@example.com" }
+  { name = "CodeReviewer Team", email = "team@example.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.10"

@@ -28,3 +28,11 @@ samples.jsonl
 
 # Logs
 *.log
+trash/
+
+data/build_dataset.py
+data/codereview_raw.jsonl
+data/codereview_sample20.jsonl
+test.ipynb
+test.py
+results/
