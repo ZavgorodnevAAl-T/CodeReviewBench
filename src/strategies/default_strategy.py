@@ -1,27 +1,34 @@
 from .base_strategy import EvaluationStrategy
 from ..models.base_model import BaseLLM
-from typing import List, Optional, Callable
-import pandas as pd
+from typing import List, Optional
+import json
+import os
 from configs.generation_config import GenerationConfig
 from ..prompts.generation_prompt import SYSTEM_PROMPT
 from ..metrics.compute_metrics import compute_metrics
 
+
 class DefaultStrategy(EvaluationStrategy):
-    def __init__(self, model: BaseLLM, judge_model: BaseLLM, metrics_to_compute: List[str], data_path: str = None):
+    def __init__(self, model: BaseLLM, metrics_to_compute: List[str], data_path: str = None):
         super().__init__(model, [], data_path)
-        self.judge_model = judge_model
         self.metrics_to_compute = metrics_to_compute
 
-    def evaluate(
+    def generate(
         self,
         generation_config: GenerationConfig,
         passes: List[int] = [1, 5, 10],
         max_workers: int = 8,
-        progress_callback: "Optional[Callable[[float, str], None]]" = None,
-    ):
+        cache_path: str = None,
+    ) -> List[List[str]]:
+        """Generate predictions (n=max(passes) runs per sample). Load from cache if available."""
         n_generations = max(passes)
 
-        # Generate n_generations times, each call returns one prediction per sample
+        if cache_path and os.path.exists(cache_path):
+            print(f"Loading generations from cache: {cache_path}")
+            with open(cache_path) as f:
+                predictions = [json.loads(line)["predictions"] for line in f]
+            return predictions
+
         all_runs = []
         for i in range(n_generations):
             print(f"Generation run {i + 1}/{n_generations}")
@@ -36,18 +43,28 @@ class DefaultStrategy(EvaluationStrategy):
             for sample_i in range(len(self.prompts))
         ]
 
-        metrics_results = compute_metrics(
+        if cache_path:
+            os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+            with open(cache_path, "w") as f:
+                for i, preds in enumerate(predictions):
+                    f.write(json.dumps({"sample_idx": i, "predictions": preds}, ensure_ascii=False) + "\n")
+            print(f"Saved generations to cache: {cache_path}")
+
+        self.latest_predictions = predictions
+        return predictions
+
+    def evaluate(
+        self,
+        predictions: List[List[str]],
+        judge_model: BaseLLM,
+        passes: List[int] = [1, 5, 10],
+    ):
+        """Run metrics on pre-computed predictions using the given judge model."""
+        return compute_metrics(
             predictions,
             self.outputs,
             self.diffs,
             self.metrics_to_compute,
-            self.judge_model,
+            judge_model,
             passes,
         )
-
-        # Expose predictions for inspection in UI
-        self.latest_predictions = predictions  # type: ignore[attr-defined]
-
-        return metrics_results
-    
-    
