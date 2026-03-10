@@ -1,5 +1,6 @@
 import httpx
 import json
+import re
 import logging
 import traceback
 from typing import List, Optional
@@ -13,6 +14,19 @@ from .base_model import BaseLLM
 logger = logging.getLogger(__name__)
 
 
+def _extract_json(text: str) -> str:
+    """Extract first JSON object from text (handles markdown code blocks)."""
+    # Strip ```json ... ``` fences
+    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+    if fenced:
+        return fenced.group(1)
+    # Find first {...} block
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if match:
+        return match.group(0)
+    raise ValueError(f"No JSON object found in response: {text[:200]}")
+
+
 class OpenAILLM(BaseLLM):
     def __init__(self, model_config: ModelConfig):
         self.api_key = model_config.api_key
@@ -21,7 +35,7 @@ class OpenAILLM(BaseLLM):
         self.model_path = model_config.model_path
         self._http = httpx.Client(verify=False, timeout=120)
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=30))
     def generate(self, system_prompt: Optional[str], prompt: str, generation_config: GenerationConfig, response_format=None) -> str:
         messages = []
         if system_prompt:
@@ -36,13 +50,7 @@ class OpenAILLM(BaseLLM):
             "top_p": generation_config.top_p,
         }
         if response_format:
-            payload["response_format"] = {
-                "type": "json_schema",
-                "json_schema": {
-                    "name": response_format.__name__,
-                    "schema": response_format.model_json_schema(),
-                },
-            }
+            payload["response_format"] = {"type": "json_object"}
 
         try:
             resp = self._http.post(
@@ -52,9 +60,29 @@ class OpenAILLM(BaseLLM):
             )
             resp.raise_for_status()
             content = resp.json()["choices"][0]["message"]["content"]
+
+            if content is None:
+                # Model doesn't support response_format — retry without it
+                payload.pop("response_format", None)
+                resp = self._http.post(
+                    f"{self.base_url}/chat/completions",
+                    headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
+                    json=payload,
+                )
+                resp.raise_for_status()
+                content = resp.json()["choices"][0]["message"]["content"]
+
+            if content is None:
+                raise ValueError("Model returned null content")
+
             logger.info(content)
+
             if response_format:
-                return response_format.model_validate_json(content)
+                try:
+                    return response_format.model_validate_json(content)
+                except Exception:
+                    return response_format.model_validate_json(_extract_json(content))
+
             return content
         except Exception:
             logger.error("generate failed:\n%s", traceback.format_exc())

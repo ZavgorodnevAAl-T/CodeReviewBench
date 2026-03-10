@@ -22,14 +22,6 @@ USER_PROMPT_MULTIMETRIC = """
 diff: {diff}
 review: {hypothesis}
 
-
-
-YOU NEED TO EVALUATE THE REVIEW COMMENT FOLLOWING THIS FORMAT:
-class Metrics(BaseModel):
-    readability: int
-    relevance: int
-    problem_identification: int
-    actionability: int
-    specificity: int
-
+Respond with a JSON object only, no extra text:
+{{"readability": <1-10>, "relevance": <1-10>, "problem_identification": <1-10>, "actionability": <1-10>, "specificity": <1-10>}}
 """
