@@ -5,12 +5,13 @@ from ..prompts.exact_match_prompt import EXACT_MATCH_PROMPT , SYSTEM_PROMPT
 from configs.generation_config import GenerationConfig
 
 class ExactMatchJudge(BaseJudge):
-    def __init__(self, model: BaseLLM):
+    def __init__(self, model: BaseLLM, no_reasoning: bool = False):
         self.model = model
         self.generation_config = GenerationConfig(
             max_new_tokens=4096,
             temperature=0.7,
-            top_p=1.0
+            top_p=1.0,
+            no_reasoning=no_reasoning,
         )
     def judge(
         self,
@@ -47,6 +48,7 @@ class ExactMatchJudge(BaseJudge):
             prompts=flat_prompts,
             system_prompt=SYSTEM_PROMPT,
             generation_config=self.generation_config,
+            tag="llm_exact_match",
         )
 
         flat_scores: list[int] = [

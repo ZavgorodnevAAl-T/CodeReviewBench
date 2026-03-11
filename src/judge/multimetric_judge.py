@@ -13,12 +13,13 @@ class Metrics(BaseModel):
     specificity: int
 
 class MultimetricJudge(BaseJudge):
-    def __init__(self, model: BaseLLM):
+    def __init__(self, model: BaseLLM, no_reasoning: bool = False):
         self.model = model
         self.generation_config = GenerationConfig(
             max_new_tokens=4096,
             temperature=0.7,
-            top_p=1.0
+            top_p=1.0,
+            no_reasoning=no_reasoning,
         )
     def judge(self, diff: List[str], references: List[str], hypotheses: List[List[str]]) -> List[Metrics]:
         
@@ -34,8 +35,8 @@ class MultimetricJudge(BaseJudge):
             prompts=prompts,
             system_prompt=SYSTEM_PROMPT,
             response_format=Metrics,
-                        generation_config=self.generation_config,
-
+            generation_config=self.generation_config,
+            tag="multi_metric",
         )
         
         return responses

@@ -5,8 +5,8 @@ from ..models.base_model import BaseLLM
 import pandas as pd
 
 class ExactMatchMetric(BaseMetric):
-    def __init__(self, model: BaseLLM, **kwargs):
-        self.judge = ExactMatchJudge(model)
+    def __init__(self, model: BaseLLM, no_reasoning: bool = False, **kwargs):
+        self.judge = ExactMatchJudge(model, no_reasoning=no_reasoning)
         
     def calculate(
         self,

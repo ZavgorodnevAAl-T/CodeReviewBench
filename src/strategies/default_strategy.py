@@ -33,7 +33,7 @@ class DefaultStrategy(EvaluationStrategy):
         for i in range(n_generations):
             print(f"Generation run {i + 1}/{n_generations}")
             run = self.model.batch_generate(
-                self.prompts, generation_config, system_prompt=SYSTEM_PROMPT, max_workers=max_workers
+                self.prompts, generation_config, system_prompt=SYSTEM_PROMPT, max_workers=max_workers, tag="generation"
             )
             all_runs.append(run)
 
@@ -58,6 +58,7 @@ class DefaultStrategy(EvaluationStrategy):
         predictions: List[List[str]],
         judge_model: BaseLLM,
         passes: List[int] = [1, 5, 10],
+        no_reasoning: bool = False,
     ):
         """Run metrics on pre-computed predictions using the given judge model."""
         return compute_metrics(
@@ -67,4 +68,5 @@ class DefaultStrategy(EvaluationStrategy):
             self.metrics_to_compute,
             judge_model,
             passes,
+            no_reasoning=no_reasoning,
         )

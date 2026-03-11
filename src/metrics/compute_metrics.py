@@ -30,19 +30,20 @@ class MetricsFactory:
 
 
 def compute_metrics(
-    predictions: List[List[str]], 
+    predictions: List[List[str]],
     outputs: List[str],
     diffs: List[str],
-    metrics_to_compute: List[str], 
+    metrics_to_compute: List[str],
     judge_model: Optional[BaseLLM] = None,
-    passes: List[int] = [1, 5, 10]
+    passes: List[int] = [1, 5, 10],
+    no_reasoning: bool = False,
 ) -> Dict[str, Tuple[pd.DataFrame, pd.Series, pd.Series]]:
-        
+
     results = {}
-    
+
     for metric_name in metrics_to_compute:
         try:
-            metric = MetricsFactory.get_metric(metric_name, judge_model)
+            metric = MetricsFactory.get_metric(metric_name, judge_model, no_reasoning=no_reasoning)
             if isinstance(metric, MultiMetric):
                 result = metric.calculate(outputs, predictions, diffs)
             else:

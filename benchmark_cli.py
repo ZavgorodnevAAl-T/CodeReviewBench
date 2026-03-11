@@ -46,6 +46,7 @@ def parse_args():
     # Data & parallelism
     parser.add_argument("--data-path", default=None)
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--no-reasoning", action="store_true", help="Disable reasoning/thinking for models that support it")
 
     # Output
     parser.add_argument("--out-dir", default="results")
@@ -103,7 +104,7 @@ def main():
     if not judge_paths:
         raise ValueError("No judge models set. Pass --judge-model-path or set $JUDGE_LLM_MODELS")
 
-    gen_cfg = GenerationConfig(max_new_tokens=args.max_new, temperature=args.temperature, top_p=args.top_p)
+    gen_cfg = GenerationConfig(max_new_tokens=args.max_new, temperature=args.temperature, top_p=args.top_p, no_reasoning=args.no_reasoning)
     metrics = [m.strip() for m in args.metrics.split(",") if m.strip()]
     passes = [int(p) for p in args.passes.split(",") if p]
 
@@ -131,14 +132,40 @@ def main():
         judge_cfg = build_model_config(args, judge_path, prefix="judge_")
         judge_model = model_factory.get_model(judge_cfg)
 
-        results = strategy.evaluate(predictions, judge_model, passes=passes)
+        results = strategy.evaluate(predictions, judge_model, passes=passes, no_reasoning=args.no_reasoning)
 
         prefix = f"{model_slug}__judge_{judge_slug}"
         out_json  = os.path.join(args.out_dir, f"{prefix}.json")
         out_jsonl = os.path.join(args.out_dir, f"{prefix}_samples.jsonl")
         save_results(results, strategy, out_json, out_jsonl)
 
+        # Print token usage summary
+        _print_token_stats("benchmark model", benchmark_model)
+        _print_token_stats(f"judge ({judge_path})", judge_model)
+
     print("\nDone.")
+
+
+def _print_token_stats(label: str, model):
+    stats = model.token_stats() if hasattr(model, "token_stats") else {}
+    if not stats:
+        return
+
+    col_phase  = max(len(tag) for tag in stats)
+    col_input  = max(len(f"{s['avg_prompt_tokens']}") for s in stats.values())
+    col_output = max(len(f"{s['avg_completion_tokens']}") for s in stats.values())
+
+    hdr = f"  {'Phase':<{col_phase}}  {'Input':>{col_input}}  {'Output':>{col_output}}  Requests"
+    sep = f"  {'-'*col_phase}  {'-'*col_input}  {'-'*col_output}  --------"
+
+    print(f"\nToken usage [{label}]:")
+    print(hdr)
+    print(sep)
+    for tag, s in stats.items():
+        inp  = f"{s['avg_prompt_tokens']}"
+        out  = f"{s['avg_completion_tokens']}"
+        reqs = s['total_requests']
+        print(f"  {tag:<{col_phase}}  {inp:>{col_input}}  {out:>{col_output}}  {reqs}")
 
 
 if __name__ == "__main__":

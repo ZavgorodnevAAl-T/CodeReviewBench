@@ -14,8 +14,8 @@ class MultiMetricResult(BaseModel):
     specificity: float
 
 class MultiMetric(BaseMetric):
-    def __init__(self, model: BaseLLM, **kwargs):
-        self.judge = MultimetricJudge(model)
+    def __init__(self, model: BaseLLM, no_reasoning: bool = False, **kwargs):
+        self.judge = MultimetricJudge(model, no_reasoning=no_reasoning)
         
         
     def calculate(self, references: List[str], hypotheses: List[List[str]], diffs: List[str]) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
